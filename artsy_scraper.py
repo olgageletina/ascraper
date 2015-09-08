@@ -1,5 +1,5 @@
 """
-this scraper is designed to scrape the information on artworks available on artsy.net. Change.
+this scraper is designed to scrape the information on artworks available on artsy.net.
 more specifically, the browse home page: 'https://www.artsy.net/browse'. 
 compared to the information attained using the artsy API, the scraper results are more numerous -- the resulting dataset ranges between 60,000 - 70,000 records.
 
