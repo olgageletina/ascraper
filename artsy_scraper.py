@@ -19,7 +19,7 @@ CATEGORY_API_URL = 'https://api.artsy.net/api/v1/search/filtered/gene/{cat}?size
 
 # enumerate categories
 
-CATEGORIES = ['painting'
+DEFAULT_CATEGORIES = ['painting'
                 , 'work-on-paper'
                 , 'photography'
                 , 'sculpture'
@@ -32,6 +32,16 @@ CATEGORIES = ['painting'
                 , 'jewelry']
 
 # scrape!
+
+class ArtsyScraper(object):
+    """
+    This class the requests date from the non-publicized artsy API.
+    """
+    def __init__(self, token):
+        self.token = token
+
+    def get_artworks_by_categories(self, categories = DEFAULT_CATEGORIES, max_results_per_category = 100000):
+
 
 def artsy_scraper(cats, api_url):
     records = []
