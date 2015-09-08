@@ -1,5 +1,9 @@
+"""
+this scraper is designed to scrape the information on artworks available on artsy.net. 
+more specifically, the browse home page: 'https://www.artsy.net/browse'. 
+compared to the information attained using the artsy API, the scraper results are more numerous -- the resulting dataset ranges between 60,000 - 70,000 records.
 
-#scraping artsy
+"""
 
 import re
 import pandas as pd
@@ -9,22 +13,23 @@ import StringIO
 import html5lib
 import getpass
 
+# define API URL
 
-ref_url = 'https://www.artsy.net/browse'
-i_url = 'https://api.artsy.net/api/v1/search/filtered/main?size=100&page={0}'
+CATEGORY_API_URL = 'https://api.artsy.net/api/v1/search/filtered/gene/{cat}?size=100&page={page}'
 
 # enumerate categories
 
-cats = ['painting', 'work-on-paper', 'photography'
-        , 'sculpture', 'design', 'performance-art'
-        , 'drawing', 'film-video', 'installation'
-        , 'prints', 'jewelry']
-
-
-# define url
-
-api_url = 'https://api.artsy.net/api/v1/search/filtered/gene/{cat}?size=100&page={page}'
-
+CATEGORIES = ['painting'
+                , 'work-on-paper'
+                , 'photography'
+                , 'sculpture'
+                , 'design'
+                , 'performance-art'
+                , 'drawing'
+                , 'film-video'
+                , 'installation'
+                , 'prints'
+                , 'jewelry']
 
 # scrape!
 
