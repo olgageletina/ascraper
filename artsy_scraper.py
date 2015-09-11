@@ -35,7 +35,7 @@ DEFAULT_CATEGORIES = ['painting'
 
 class ArtsyScraper(object):
     """
-    This class the requests date from the non-publicized artsy API.
+    This class requests data from the non-publicized artsy API.
     """
     def __init__(self, token):
         self.token = token
@@ -45,7 +45,7 @@ class ArtsyScraper(object):
         for category in categories:
             for page in xrange(1, max_results_per_category / 100):
                 s=requests.session()
-                s.headers['X-XAPP-TOKEN'] = token
+                s.headers['X-XAPP-TOKEN'] = self.token
                 res = s.get(CATEGORY_API_URL.format(page=str(page), category=category))
 
                 if not res.ok:
@@ -53,31 +53,8 @@ class ArtsyScraper(object):
                 records.append(res.json())
         return pd.concat([pd.DataFrame(rec) for rec in records])
 
-"""
-def artsy_scraper(cats, api_url):
-    records = []
-    for cat in cats:
-        for page in xrange(1,100):
-        #for url in [api_url.format(str(i)) for i in xrange(1, 1000)]: # how to add a conditional categories?
-            s=requests.session()
-            s.headers['X-XAPP-TOKEN'] = 'JvTPWe4WsQO-xqX6Bts49qpFKr1f3TyJ-7Qcen1pvBuQ_-8w6eRqPS9L8T2H1Ae-cdz7MYQGPST4uCgoHQloBlM-xdB3yOZEulFRKyQxgDG5bEh30N2CZSqdajZEZHAfXqHI5HRLiRHYP8CwOzJHJiMgNY4tmcvRiGLPllfSrys4tfYmHACGPeSrKZjgo5KuDQd1sgf6NAL17EuAn3OY2Cp9B09JQFtBml3zfnZNEAQ=' 
-            res = s.get(api_url.format(page=str(page), cat=cat))
-
-            if not res.ok:
-                break
-            records.append(res.json())
-
-    # Concat All json pages into single dataframe
-    return pd.concat([pd.DataFrame(rec) for rec in records])
-    # to get script to run again need to get the new X-APP token
-
-
-# run function!
-
-artsy_scraper(cats = cats, api_url = api_url)
-"""
 
 new_token = 'JvTPWe4WsQO-xqX6Bts49j4qtAO9fjV00DNgW56CqJEuwKHVWR1Zlytn5uxbK-znaA5-RyqbQLwZb_aR-P4tMkl1nzNUBWKxRCxAR57AQyejbfDdrhGLa5_ZdEP-TY1fzYgBZkC_ZaWY15GDXrN5eC3rU7AqSsAetQ53ioH5FrkZmgC7qo4UPkuXRio1NuOio6GegvGO5U1jz38qRkL60CDPR5FiV661XdYnLGOn2BQ='
 test = ArtsyScraper(new_token)
 
-test.get_artworks_by_categories(categories = 'design', max_results_per_category = 100)
+test.get_artworks_by_categories(categories = DEFAULT_CATEGORIES, max_results_per_category = 200)
