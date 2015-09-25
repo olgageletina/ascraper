@@ -32,6 +32,11 @@ DEFAULT_CATEGORIES = ['painting'
                 , 'jewelry']
 
 # scrape!
+class UnauthorizedException(Exception):
+    pass
+
+class HTPException(Exception):
+    pass
 
 class ArtsyScraper(object):
     """
@@ -44,17 +49,26 @@ class ArtsyScraper(object):
         records = []
         for category in categories:
             for page in xrange(1, max_results_per_category / 100):
-                s=requests.session()
-                s.headers['X-XAPP-TOKEN'] = self.token
-                res = s.get(CATEGORY_API_URL.format(page=str(page), category=category))
+                session = requests.session()
+                session.headers['X-XAPP-TOKEN'] = self.token
+                response = session.get(CATEGORY_API_URL.format(page = page, category = category))
 
-                if not res.ok:
-                    break
-                records.append(res.json())
-        return pd.concat([pd.DataFrame(rec) for rec in records])
+                if response.status_code == requests.codes.unauthorized:
+                    raise UnauthorizedException(response.json()['text'])
+
+                if not response.ok:
+                    print records
+                    print response.json()
+                    raise HTPException(response.json()['text'])
+
+                records.append(response.json())
+                break
+
+        return records
+        #return pd.concat([pd.DataFrame(rec) for rec in records])
 
 
-new_token = 'JvTPWe4WsQO-xqX6Bts49j4qtAO9fjV00DNgW56CqJEuwKHVWR1Zlytn5uxbK-znaA5-RyqbQLwZb_aR-P4tMkl1nzNUBWKxRCxAR57AQyejbfDdrhGLa5_ZdEP-TY1fzYgBZkC_ZaWY15GDXrN5eC3rU7AqSsAetQ53ioH5FrkZmgC7qo4UPkuXRio1NuOio6GegvGO5U1jz38qRkL60CDPR5FiV661XdYnLGOn2BQ='
+new_token = 'JvTPWe4WsQO-xqX6Bts49jf1k5gBrB8xKt4tShB-pfx4_xIuvOwOVBafP5_PgGZh3qfN8V508TmWgs8XWNevka00wQmdqxfcWqQKcchA6UrdFtWkT1L--u5dV5M2Y5SISuCdZcBIT7qn6by-Rtz2msCm9o7J_z85TaP2m-khd9-CsGBbhQX0pakBKDDGU022gpKD6tHK4YTnKf6LrzzS_xl_mCRp-5vFOPylWdUArGg='
 test = ArtsyScraper(new_token)
 
 test.get_artworks_by_categories(categories = DEFAULT_CATEGORIES, max_results_per_category = 200)
