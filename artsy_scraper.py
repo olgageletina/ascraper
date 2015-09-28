@@ -35,7 +35,7 @@ DEFAULT_CATEGORIES = ['painting'
 class UnauthorizedException(Exception):
     pass
 
-class HTPException(Exception):
+class HTTPException(Exception):
     pass
 
 class ArtsyScraper(object):
@@ -57,12 +57,13 @@ class ArtsyScraper(object):
                     raise UnauthorizedException(response.json()['text'])
 
                 if not response.ok:
-                    print records
+                    #print records
                     print response.json()
-                    raise HTPException(response.json()['text'])
+                    break
+                    #raise HTTPException(response.json())
 
                 records.append(response.json())
-                break
+                #break
 
         return records
         #return pd.concat([pd.DataFrame(rec) for rec in records])
