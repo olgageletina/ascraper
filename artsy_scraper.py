@@ -56,16 +56,32 @@ class ArtsyScraper(object):
     def __init__(self, token):
         self.token = token
 
+    def check_response(self, response):
+        """
+        This method checks to see whether the response is okay. 
+        """
+        if response.status_code == requests.codes.unauthorized: 
+            raise UnauthorizedException(response.json()['text'])
+        elif not response.ok and response.status_code != requests.codes.not_found:
+            raise HTTPException(response.json())
+
+    def calculate_pages(self, num_results):
+        """
+        Calculates the number of pages need to retrieve the of number results needed. 
+        """
+        pages = num_results / RECORDS_PER_PAGE
+        if num_results % RECORDS_PER_PAGE > 0:
+            pages = pages + 1 
+            
+        return pages
+
     def get_artworks_by_categories(self, categories = DEFAULT_CATEGORIES, max_results_per_category = 10000):
         """
         This method sends a request to the artsy.net API and scrapes data based on the desired categories and number of results.
         """
         records = [] 
 
-        pages = max_results_per_category / RECORDS_PER_PAGE
-        if max_results_per_category % RECORDS_PER_PAGE > 0:
-            pages = pages +1 
-        else pages
+        pages = self.calculate_pages(max_results_per_category)
         
         for category in categories:
             for page in xrange(1, pages + 1):
@@ -73,12 +89,10 @@ class ArtsyScraper(object):
                 session.headers['X-XAPP-TOKEN'] = self.token
                 response = session.get(CATEGORY_API_URL.format(page = page, category = category))
 
-                if response.status_code == requests.codes.unauthorized:
-                    raise UnauthorizedException(response.json()['text'])
-                elif response.status_code == requests.codes.not_found:
+                self.check_response(response)
+
+                if response.status_code == requests.codes.not_found:
                     break
-                elif not response.ok:
-                    raise HTTPException(response.json())
 
                 records.extend(response.json()[0:(max_results_per_category - len(records))])
 
@@ -87,7 +101,7 @@ class ArtsyScraper(object):
         #+ ((max_results_per_category % 100) ? 1 : 0)
 
 
-new_token = 'JvTPWe4WsQO-xqX6Bts49hlE3XSiQBM830BTU2YBHhP8i2ac3_mgIeJcYmO5l_Q0liaI-Nk9K7Jld8FxBtCj5Q62BGCWCN0s29VIpAfj1xhuMHoBd5NoOeXVYlKy4PGsNu9-I5DYj4J6STO53yscSu5yMe_tQtCmJqF3Lipq-eTk_JX9eEfZgL7tYxzLfZ83NmFm9jMATEOI-_xKNpg2NQzW539tpuKFfIu9jbcp-2o='
+new_token = 'JvTPWe4WsQO-xqX6Bts49r4tDJjzicy22lNK9c5bmBQPI_yNHMdjMnqszvPZF7d404olH4KJB1bznv0nIfKjHmCqCKTyjqs0a9OPasF3xyMAv1X0VuPULZNcPmV5HnZPZjaeTqfThBqy2CrUUqHzaIQzI7W7EmiHSuyyKD9MXvxOfJDYPc4aNBzt2pWjt3rJ_K6Te5rOjn2fp-1iEgh368c2q7sjVsgBm4I32rLYe5A='
 test = ArtsyScraper(new_token)
 
 art = test.get_artworks_by_categories(categories = DEFAULT_CATEGORIES, max_results_per_category = 200)
