@@ -1,8 +1,25 @@
 """
-this scraper is designed to scrape the information on artworks available on artsy.net.
+.. module:: artsy_scraper.py
+   :synopsis: This scraper is designed to scrape the information on artworks available on artsy.net. This script returns JSON records.
+
+.. moduleauthor:: Olga Geletina (under tutelage of Jon Kaczynski)
+
+Docstring for my module
+
+.. data:: RECORDS_PER_PAGE
+    
+    Maximun number of records per page
+
+.. data:: CATEGORY_API_URL
+
+    The API URL used as input for get_artworks_by_categories to scrape artworks
+    
+.. data:: DEFAULT_CATEGORIES
+    
+    Enumerates various artwork categories, used as input for get_artworks_by_categories to scrape artworks 
+
 more specifically, the browse home page: 'https://www.artsy.net/browse'. 
 compared to the information attained using the artsy API, the scraper results are more numerous -- the resulting dataset ranges between 60,000 - 70,000 records.
-JSON records are returned.
 """
 
 import re
@@ -14,15 +31,9 @@ import html5lib
 import getpass
 import math
 
-# maximun number of records per page
-
 RECORDS_PER_PAGE = 100
 
-# define API URL
-
 CATEGORY_API_URL = 'https://api.artsy.net/api/v1/search/filtered/gene/{category}?size=100&page={page}'
-
-# enumerate categories
 
 DEFAULT_CATEGORIES = ['painting'
                 , 'work-on-paper'
@@ -36,38 +47,56 @@ DEFAULT_CATEGORIES = ['painting'
                 , 'prints'
                 , 'jewelry']
 
-# scrape!
 class UnauthorizedException(Exception):
     """
-    This exception is raised when there is a bad unauthorized response.
+    .. class:: UnauthorizedException
+        This exception is raised when there is a bad unauthorized response.
+
     """
     pass
 
 class HTTPException(Exception):
     """
-    This exception is raised when there is a bad response that's other than unauthorized.
+    .. class:: HTTPException
+        This exception is raised when there is a bad response that's other than unauthorized.
+
     """
     pass
 
 class ArtsyScraper(object):
     """
-    This class requests data from the non-publicized artsy API.
+    .. class:: ArtsyScraper
+        This class requests data from the non-publicized artsy API.
+
     """
     def __init__(self, token):
         self.token = token
 
     def check_response(self, response):
         """
-        This method checks to see whether the response is okay. 
+        This method checks to see whether the response is okay.
+        
+        :param response: HTTP response from the server.
+        :returns: Response object.
+        :raises: UnauthorizedException, HTTPException
+
         """
-        if response.status_code == requests.codes.unauthorized: 
-            raise UnauthorizedException(response.json()['text'])
-        elif not response.ok and response.status_code != requests.codes.not_found:
-            raise HTTPException(response.json())
+        if not response.ok:
+            if response.status_code == requests.codes.unauthorized: 
+                raise UnauthorizedException(response.json()['text'])
+            elif response.status_code != requests.codes.not_found:
+                raise HTTPException(response.json())
+        else:
+            return response
 
     def calculate_pages(self, num_results):
         """
-        Calculates the number of pages need to retrieve the of number results needed. 
+        This method calculates the number of pages need to retrieve the of number results needed.
+        
+        :param num_results: total number of results to be returned.
+        :type num_results: int.
+        :returns: int
+
         """
         pages = num_results / RECORDS_PER_PAGE
         if num_results % RECORDS_PER_PAGE > 0:
@@ -78,6 +107,13 @@ class ArtsyScraper(object):
     def get_artworks_by_categories(self, categories = DEFAULT_CATEGORIES, max_results_per_category = 10000):
         """
         This method sends a request to the artsy.net API and scrapes data based on the desired categories and number of results.
+        
+        :param categories: categories of artworks on artsy.net, by default the :const DEFAULT_CATEGORIES: is used.
+        :type categories: list.
+        :param max_results_per_category: the maximum number of results wanted.
+        :type max_results_per_category: int.
+        :returns: JSON records
+
         """
         records = [] 
 
@@ -91,6 +127,7 @@ class ArtsyScraper(object):
 
                 self.check_response(response)
 
+                #: if after attaining results we get a 404 NOT_FOUND response then there aren't anymore artworks for that category
                 if response.status_code == requests.codes.not_found:
                     break
 
@@ -101,7 +138,7 @@ class ArtsyScraper(object):
         #+ ((max_results_per_category % 100) ? 1 : 0)
 
 
-new_token = 'JvTPWe4WsQO-xqX6Bts49r4tDJjzicy22lNK9c5bmBQPI_yNHMdjMnqszvPZF7d404olH4KJB1bznv0nIfKjHmCqCKTyjqs0a9OPasF3xyMAv1X0VuPULZNcPmV5HnZPZjaeTqfThBqy2CrUUqHzaIQzI7W7EmiHSuyyKD9MXvxOfJDYPc4aNBzt2pWjt3rJ_K6Te5rOjn2fp-1iEgh368c2q7sjVsgBm4I32rLYe5A='
+new_token = 'JvTPWe4WsQO-xqX6Bts49n14lPUtpcfyx0tYwY0RmR_WHGS9UXT9ioTrGP348dTkHkvzkKYYMFIGvaC5my04IcIxUPz0x729rnT7LcQfjF_up7IIQPhTt_4zI0gVerPf3LXVtRrh3l12Ob8EqJ6HQ2MJIUe9SMqqqgK4Mg40NCk9lC82BHrqtOfiZvyEw6XAFZ-x2F7nuJmS07ErJRNwb9IeV7vtPJSLe5kPWOtcVmM='
 test = ArtsyScraper(new_token)
 
 art = test.get_artworks_by_categories(categories = DEFAULT_CATEGORIES, max_results_per_category = 200)
