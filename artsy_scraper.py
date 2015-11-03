@@ -8,7 +8,7 @@ Docstring for my module
 
 .. data:: RECORDS_PER_PAGE
     
-    Maximun number of records per page
+    Maximum number of records per page
 
 .. data:: CATEGORY_API_URL
 
@@ -138,8 +138,9 @@ class ArtsyScraper(object):
         #+ ((max_results_per_category % 100) ? 1 : 0)
 
 
+#TODO: if __name__ == '__main__':
 new_token = 'JvTPWe4WsQO-xqX6Bts49n14lPUtpcfyx0tYwY0RmR_WHGS9UXT9ioTrGP348dTkHkvzkKYYMFIGvaC5my04IcIxUPz0x729rnT7LcQfjF_up7IIQPhTt_4zI0gVerPf3LXVtRrh3l12Ob8EqJ6HQ2MJIUe9SMqqqgK4Mg40NCk9lC82BHrqtOfiZvyEw6XAFZ-x2F7nuJmS07ErJRNwb9IeV7vtPJSLe5kPWOtcVmM='
 test = ArtsyScraper(new_token)
-
-art = test.get_artworks_by_categories(categories = DEFAULT_CATEGORIES, max_results_per_category = 200)
+art =  test.get_artworks_by_categories(categories = DEFAULT_CATEGORIES, max_results_per_category = 200)
 print art
+#
