@@ -1,0 +1,1 @@
+Search.setIndex({envversion:42,terms:{index:0,search:0,retriev:1,modul:0,after:1,content:0,have:1,artwork:1,"break":1,page:0,loop:1,more:1},objtypes:{},objnames:{},filenames:["index","code"],titles:["Welcome to artsy_scraper&#8217;s documentation!","Documentation for the Code"],objects:{},titleterms:{code:1,welcom:0,auto:1,indic:0,member:1,artsy_scrap:0,tabl:0,document:[0,1]}})

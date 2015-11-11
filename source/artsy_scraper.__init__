@@ -1,0 +1,10 @@
+"""A pypi demonstration vehicle.
+
+.. moduleauthor:: Olga Geletina
+
+"""
+
+import artsy_scraper
+
+
+    "This starts this module running ..."
